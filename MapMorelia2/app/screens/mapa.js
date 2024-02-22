@@ -1,112 +1,129 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Button, Alert, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 const MapScreen = () => {
-  // Estados para controlar la ubicación, la región del mapa, la visualización del mapa y la interactividad del mismo
   const [location, setLocation] = useState(null);
   const [mapRegion, setMapRegion] = useState(null);
-  const [showMap, setShowMap] = useState(false);
-  const [isInteractive, setIsInteractive] = useState(false);
-  const windowHeight = Dimensions.get('window').height;
+  const [selectedCoordinates, setSelectedCoordinates] = useState(null);
+  const [currentDateTime, setCurrentDateTime] = useState('');
 
-  // Función para obtener la ubicación actual y mostrar el mapa
-  const handleYes = async () => {
-    setIsInteractive(true); // Habilitar la interacción con el mapa
-    try {
-      // Solicitar permisos de ubicación y obtener la ubicación actual
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.error('Permiso de ubicación no otorgado');
-        return;
+  useEffect(() => {
+    const getCurrentDateTime = () => {
+      const date = new Date();
+      const formattedDateTime = date.toLocaleString();
+      setCurrentDateTime(formattedDateTime);
+    };
+
+    (async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error('Permiso de ubicación no otorgado');
+          return;
+        }
+        const currentLocation = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = currentLocation.coords;
+        setLocation({ latitude, longitude });
+        setMapRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        });
+      } catch (error) {
+        console.error('Error de geolocalización:', error);
       }
-      const currentLocation = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = currentLocation.coords;
-      // Establecer la ubicación y la región del mapa con la ubicación actual
-      setLocation({ latitude, longitude });
-      setMapRegion({
-        latitude,
-        longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      });
-      setShowMap(true);
-    } catch (error) {
-      console.error('Error de geolocalización:', error);
-      // Mostrar un mensaje de error si no se puede obtener la ubicación
-      Alert.alert(
-        'Error',
-        'No se pudo obtener la ubicación actual. Intente de nuevo más tarde.',
-      );
-    }
-  };
+    })();
 
-  // Función para mostrar el mapa sin ubicación actual
-  const handleNo = () => {
-    setIsInteractive(true);
-    // Establecer la región del mapa en Morelia, México
-    setMapRegion({
-      latitude: 19.7027,
-      longitude: -101.192,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.1,
-    });
-    setShowMap(true); // Mostrar el mapa sin ubicación actual
+    getCurrentDateTime();
+
+    const intervalId = setInterval(() => {
+      getCurrentDateTime();
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleMapPress = (event) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setSelectedCoordinates({ latitude, longitude });
   };
 
   return (
     <View style={styles.container}>
-      {!showMap && (
-        // Ventana emergente con botones "Sí" y "No" para confirmar la ubicación
-        <View style={styles.promptContainer}>
-          <Button title="Sí" onPress={handleYes} />
-          <Button title="No" onPress={handleNo} />
+      <MapView
+        style={styles.map}
+        initialRegion={mapRegion}
+        onPress={handleMapPress}
+      >
+        {location && !selectedCoordinates && (
+          <Marker
+            coordinate={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }}
+            title="Mi ubicación"
+          />
+        )}
+        {selectedCoordinates && (
+          <Marker
+            coordinate={{
+              latitude: selectedCoordinates.latitude,
+              longitude: selectedCoordinates.longitude,
+            }}
+            title="Ubicación seleccionada"
+          />
+        )}
+      </MapView>
+      <View style={styles.bottomContentContainer}>
+        <View style={styles.cardContainer}>
+          <View style={styles.coordinatesContainer}>
+            <Text style={styles.coordinatesText}>
+              Latitud: {selectedCoordinates ? selectedCoordinates.latitude.toFixed(6) : (location ? location.latitude.toFixed(6) : '---')}, Longitud: {selectedCoordinates ? selectedCoordinates.longitude.toFixed(6) : (location ? location.longitude.toFixed(6) : '---')}
+            </Text>
+          </View>
+          <View style={styles.dateTimeContainer}>
+            <Text style={styles.dateTimeText}>{currentDateTime}</Text>
+          </View>
         </View>
-      )}
-      {showMap && (
-        // Mapa que muestra la ubicación actual o la ubicación de Morelia
-        <MapView
-          style={{ ...styles.map, height: windowHeight / 2 }}
-          initialRegion={mapRegion}
-          scrollEnabled={isInteractive} // Deshabilitar la interacción con el mapa si no se ha confirmado la ubicación
-          zoomEnabled={isInteractive}
-        >
-          {location && (
-            // Marcador en la ubicación actual si está disponible
-            <Marker
-              coordinate={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-              }}
-              title="Mi ubicación"
-            />
-          )}
-        </MapView>
-      )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0.7,
   },
   map: {
-    flex: 0.5,
+    flex: 0.7,
   },
-  promptContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+  bottomContentContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 80,
     left: 0,
     right: 0,
-    zIndex: 1,
+    alignItems: 'center',
+  },
+  cardContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 10,
+    padding: 10,
+  },
+  coordinatesContainer: {
+    marginBottom: 10,
+  },
+  coordinatesText: {
+    fontSize: 16,
+  },
+  dateTimeContainer: {
+    marginBottom: 10,
+  },
+  dateTimeText: {
+    fontSize: 16,
   },
 });
-
-
 
 export default MapScreen;

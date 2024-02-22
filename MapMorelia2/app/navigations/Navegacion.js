@@ -4,6 +4,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from '@react-navigation/stack';
 //Importamos el tipo de botón en este caso TAB
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs"
+import { Icon } from "react-native-elements";
+//import Icon from 'react-native-vector-icons/MaterialIcons';
 //Importamos el componente (vista) que se relacionará en el menú
 import Arbolera from "../screens/Arbolera";
 import MapScreen from '../screens/mapa';
@@ -16,15 +18,51 @@ const Tab = createBottomTabNavigator();
 export default function Navegacion(){
     return(
     <NavigationContainer>
-    <Tab.Navigator>
+    <Tab.Navigator
+    initialRouteName="Cuentas"
+    tabBarStyle={{
+      tabBarInactiveTintColor: "#52585E",
+      tabBarActiveTintColor: "#00a680",
+    }}
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ color }) => opciones(route, color),
+    })}>
+        
+
+
     {/*Muestra un botón que se vincula a
     nuestro componente importado*/}
     
-    <Tab.Screen name="Arbolera" component={MapScreen} />
-    <Tab.Screen name="Estadisticas" component={Estadisticas} />
+    <Tab.Screen name="Arbolera" component={MapScreen}  options={{title:"Inicio"}}/>
+    <Tab.Screen name="Estadisticas" component={Estadisticas}  />
     <Tab.Screen name="Mis Reportes" component={Reportes} />
     <Tab.Screen name="Otros" component={Otros} />
     </Tab.Navigator>
     </NavigationContainer>
+    )
+   }
+
+   function opciones(ruta, color){
+    let iconName;
+    //De acuerdo al nombre de cada ruta se signa un icono
+    switch (ruta.name) {
+    case "Arbolera":
+    //para buscar iconos https://materialdesignicons.com/
+    iconName="home";
+    break;
+    case "Estadisticas":
+    iconName="report-arc";
+    break;
+    case "Reportes":
+    iconName="report-bar";
+    break;
+    case "Otros":
+    iconName="favorite";
+    break;
+    default:
+    break;
+    }
+    return(
+    <Icon type="material-comunity" name={iconName} size={22} color={color} />
     )
    }
