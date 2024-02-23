@@ -53,16 +53,7 @@ function Sucursales(propiedades) {
  PlaceholderContent mostrará un spiner si tarda la carga de imagen
  source define que se mostrará la imagen 0 del arreglo de imágenes guardadas, si sucediera que
  no hay imagen se muestra la imagen no-encontrada cargada en el proyecto*/}
-          <Image
-            resizeMode="cover"
-            PlaceholderContent={<ActivityIndicator color="#0000ff" />}
-            source={
-              imagenes[0]
-                ? { uri: imagenes[0] }
-                : require("../../../assets/img/no-encontrada.png")
-            }
-            style={styles.imagen}
-          />
+
         </View>
         {/*Mostramos los datos adicionales de la sucursal, en el caso de la descripción dado que puede ser
  larga limitamos el texto a mostrar*/}

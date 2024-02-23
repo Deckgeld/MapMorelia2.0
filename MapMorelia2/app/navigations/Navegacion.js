@@ -12,6 +12,7 @@ import MapScreen from '../screens/mapa';
 import Estadisticas from "../screens/Estadisticas";
 import Reportes from "../screens/Reportes";
 import Otros from "../screens/Otros";
+import Login from "../screens/login";
 //Creamos la estructura de tabs
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +20,7 @@ export default function Navegacion(){
     return(
     <NavigationContainer>
     <Tab.Navigator
-    initialRouteName="Cuentas"
+    initialRouteName="Arbolera"
     tabBarStyle={{
       tabBarInactiveTintColor: "#52585E",
       tabBarActiveTintColor: "#00a680",
@@ -35,6 +36,7 @@ export default function Navegacion(){
     
     <Tab.Screen name="Arbolera" component={MapScreen}  options={{title:"Inicio"}}/>
     <Tab.Screen name="Estadisticas" component={Estadisticas}  />
+    <Tab.Screen name="Login" component={Login} />
     <Tab.Screen name="Mis Reportes" component={Reportes} />
     <Tab.Screen name="Otros" component={Otros} />
     </Tab.Navigator>
