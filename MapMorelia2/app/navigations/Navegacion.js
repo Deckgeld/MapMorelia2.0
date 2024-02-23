@@ -10,7 +10,7 @@ import MapScreen from '../screens/mapa';
 import Estadisticas from "../screens/Estadisticas";
 import Reportes from "../screens/Reportes";
 import Otros from "../screens/Otros";
-import Cuenta from "../screens/acount/cuenta";
+import RutasCuenta from "../navigations/RutasCuenta";
 //Creamos la estructura de tabs
 const Tab = createBottomTabNavigator();
 
@@ -36,7 +36,7 @@ export default function Navegacion() {
 
         <Tab.Screen name="Arbolera" component={MapScreen} options={{ title: "Inicio" }} />
         <Tab.Screen name="Estadisticas" component={Estadisticas} />
-        <Tab.Screen name="Cuenta" component={Cuenta} />
+        <Tab.Screen name="Cuenta" component={RutasCuenta} />
         <Tab.Screen name="Mis Reportes" component={Reportes} />
         <Tab.Screen name="Otros" component={Otros} />
       </Tab.Navigator>
