@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { Icon } from "react-native-elements";
 //import Icon from 'react-native-vector-icons/MaterialIcons';
 //Importamos el componente (vista) que se relacionará en el menú
-import MapScreen from '../screens/mapa';
+import RutasArbol from '../navigations/RutasArboles';
 import Estadisticas from "../screens/Estadisticas";
 import Reportes from "../screens/Reportes";
 import Otros from "../screens/Otros";
@@ -34,7 +34,7 @@ export default function Navegacion() {
         {/*Muestra un botón que se vincula a
     nuestro componente importado*/}
 
-        <Tab.Screen name="Arbolera" component={MapScreen} options={{ title: "Inicio" }} />
+        <Tab.Screen name="Arbolera" component={RutasArbol} options={{ title: "Inicio" }} />
         <Tab.Screen name="Estadisticas" component={Estadisticas} />
         <Tab.Screen name="Cuenta" component={RutasCuenta} />
         <Tab.Screen name="Mis Reportes" component={Reportes} />

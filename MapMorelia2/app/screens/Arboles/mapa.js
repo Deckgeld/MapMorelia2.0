@@ -1,7 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { Icon } from "react-native-elements";
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+
+import { firebaseApp } from "../../firebase-config";
+import 'firebase/auth';
+
+import { useNavigation } from "@react-navigation/native"
+
 
 const MapScreen = () => {
   const [location, setLocation] = useState(null);
@@ -9,6 +16,15 @@ const MapScreen = () => {
   const [selectedCoordinates, setSelectedCoordinates] = useState(null);
   const [currentDateTime, setCurrentDateTime] = useState('');
   const [currentMarker, setCurrentMarker] = useState(null);
+  const navegacion = useNavigation();
+  const [usuario, setUsuario] = useState(null);
+
+  useEffect(() => {
+    firebaseApp.auth().onAuthStateChanged((userInfo) => {
+      //si existe una sesión activa asignamos los datos de sesión al useState usuario
+      setUsuario(userInfo);
+    });
+  }, []);
 
   useEffect(() => {
     const getCurrentDateTime = () => {
@@ -95,6 +111,20 @@ const MapScreen = () => {
           </View>
         </View>
       </View>
+
+      {/*Colocaremos un botón de agregar nueva sucursal*/}
+      {usuario && (
+        <Icon
+          reverse
+          type="material_community"
+          name="add"
+          color="#0A6ED3"
+          containerStyle={styles.btn}
+          //Vinculamos el envió a la ruta agregar-suc
+          onPress={() => navegacion.navigate("addArbol")}
+        />
+      )}
+
     </View>
   );
 };

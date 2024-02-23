@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { validarEmail } from "../../utils/validaciones";
 import { size, isEmpty } from "lodash";
@@ -28,10 +28,12 @@ export default function FormRegistro(toast) {
         else {
             firebase.auth().signInWithEmailAndPassword( datos.email, datos.password)
                     .then(respuesta => {
+                        Alert.alert("Bienvenido", "Has iniciado sesión correctamente", [{ text: "OK" }]);
                         navigation.navigate("cuentas");
                     })
                     .catch(err => {
-                        toastRef.current.show("Email o contraseña incorrecta")
+                        //toastRef.current.show("Email o contraseña incorrecta")
+                        Alert.alert("Error", "Email o contraseña incorrecta", [{ text: "OK" }]);
                     });
             }
     };
