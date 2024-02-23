@@ -80,6 +80,7 @@ export default function FormRegistro(toast) {
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
                 onPress={onSubmit}
+                backgroundColor={'green'}
             />
         </View>
     )
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     btn: {
-        backgroundColor: "#0A6ED3",
+        backgroundColor: "green",
     },
     icono: {
         color: "#c1c1c1"

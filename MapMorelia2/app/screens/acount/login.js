@@ -32,11 +32,13 @@ function CrearCuenta() {
         <Text style={styles.textRegistrar}>
             ¿Aún no tienes una cuenta?{" "}
             <Text
+            color="green"
                 style={styles.link}
                 //onPress={() => console.log("Registrar")}
                 //onPress={() => Navegacion.navigate("Registro")}
                 onPress={() => Navegacion.navigate("Registro")}>
                 Regístrate!
+                
             </Text>
         </Text>
     );

@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     btn: {
-        backgroundColor: "#0A6ED3",
+        backgroundColor: "green",
     },
     icono: {
         color: "#c1c1c1"

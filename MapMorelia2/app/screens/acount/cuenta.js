@@ -1,6 +1,7 @@
 // Cuentas.js
 import React, { useState, useEffect } from "react";
 import { Text } from "react-native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { firebaseApp } from "../../firebase-config";
 import 'firebase/auth';
