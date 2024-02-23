@@ -1,11 +1,13 @@
-import React from 'react';
-//Importamos la estructura de navegación creada
-import Navegacion from './app/navigations/Navegacion';
-import { SafeAreaView } from 'react-native';
-import MapScreen from './app/screens/mapa'; // Ajusta la ruta según sea necesario
+import React, { useEffect } from 'react';
+import Navigation from './app/navigations/Navegacion';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
-  export default function App() {
-    return <SafeAreaView style={{ flex: 1 }}>
-    <Navegacion/>
-  </SafeAreaView>  
-   }
+export default function App() {
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      console.log(user);
+    })
+  }, []);
+  return <Navigation />
+};

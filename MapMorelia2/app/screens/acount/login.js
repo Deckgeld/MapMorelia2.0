@@ -3,7 +3,9 @@ import { Image, Text, StyleSheet, View, ScrollView, TouchableOpacity, TextInput,
 import { BlurView } from 'expo-blur';
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import {app} from "../firebase-config";
+import {app} from "../../firebase-config";
+import 'firebase/auth';
+
 
 import { NavigationContainer, CommonActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -11,15 +13,6 @@ import { useNavigation } from '@react-navigation/native';
 
 const uri = 'https://ak.picdn.net/shutterstock/videos/1060308725/thumb/1.jpg'
 const profilePicture = 'https://randomuser.me/api/portraits/men/34.jpg'
-
-
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
-  );
-}
 
 export default function LoginScreen() {
 
@@ -64,9 +57,6 @@ export default function LoginScreen() {
     return (
       <View style={styles.container}>
         <Image source={{ uri }} style={[styles.image, StyleSheet.absoluteFill]} />
-        <View style={{width: 100, height: 100, backgroundColor: 'purple', position: 'absolute' }}></View>
-        <View style={{width: 100, height: 100, backgroundColor: 'blue', top: 120, position: 'absolute', transform: [{rotate: '25deg'}] }}></View>
-        <View style={{width: 100, height: 100, backgroundColor: 'red', bottom: 120 ,position: 'absolute', borderRadius: 50, transform: [{rotate: '50deg'}] }}></View>
         <ScrollView contentContainerStyle= {{
           flex: 1,
           width: '100%',
