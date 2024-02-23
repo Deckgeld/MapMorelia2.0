@@ -1,149 +1,328 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, Alert } from "react-native";
-import { Input, Icon, Button } from "react-native-elements";
-import { validarEmail } from "../../utils/validaciones";
-import { size, isEmpty } from "lodash";
+import React, { useState } from "react";
+import { StyleSheet, View, ScrollView, Alert, Dimensions, Text, TextInput } from "react-native";
+import { Icon, Avatar, Image, Button } from "react-native-elements";
+
+import * as Permission from "expo-permissions";
+import * as ImagePicker from "expo-image-picker";
+import { map, size, filter } from "lodash";
+
+import uuid from "random-uuid-v4";
+import { firebaseApp } from "../../firebase-config";
 import firebase from 'firebase/compat/app';
-import {useNavigation} from "@react-navigation/native"
+import 'firebase/compat/storage';
+import 'firebase/compat/firestore';
+const db = firebase.firestore(firebaseApp);
 
-export default function FormRegistro(toast) {
-    const { toastRef } = toast;
-    const navegacion=useNavigation();
+import { useNavigation } from "@react-navigation/native"
 
-    //Mostrar contraseña
-    const [mostrar, setMostrar] = useState(false);
-    const [mostrarRepetir, setMostrarRepetir] = useState(false);
+const WidthScreen = Dimensions.get("window").width;
 
-    /*El estado datos almacenará los datos del formulario por default 
-    se inicializa con los campos creados en la función valoresDefault */
-    const [datos, setDatos] = useState(valoresDefault);
-    //Metodo para enviar los datos
-    const onSubmit = () => {
-        //Verificamos que no se envíen datos vacíos
-        if (isEmpty(datos.email) || isEmpty(datos.password) || isEmpty(datos.repeatedPassword)) {
-            toastRef.current.show("No puedes dejar campos vacios");
-        }//Validados la estructura del email
-        else if (!validarEmail(datos.email)) {
-            Alert.alert("Estructura del email incorrecta");
-        }//Validamos que la contraseña tenga al menos 6 carácteres
-        else if (size(datos.password) < 6) {
-            Alert.alert("La contraseña debe tener al menos 6 caracteres");
-        }//Validamos que las contraseñas sean iguales
-        else if (datos.password !== datos.repeatedPassword) {
-            //console.log("Las contraseñas deben ser iguales");
-            Alert.alert("Las contraseñas deben ser iguales");
-        }//Si todo es correcto visualizaremos los datos
-        else {
-            firebase.auth().createUserWithEmailAndPassword(datos.email, datos.password)
-                .then(respuesta => {
-                    Alert.alert("Registro exitoso", "Se ha registrado correctamente",)
-                    navegacion.navigate("Login");
-                })
-                .catch(err => {
-                    Alert.alert("El correo electrónico ya está en uso, intente con un correo diferente")
-                });
+export default function FormArb() {
+  const [ubicacion, setUbicacion] = useState('');
+  const [nombreComun, setNombreComun] = useState('');
+  const [nombreCientifico, setNombreCientifico] = useState('');
+  const [edad, setEdad] = useState('');
+  const [altura, setAltura] = useState('');
+  const [grosorTallo, setGrosorTallo] = useState('');
+  const [densidadFollaje, setDensidadFollaje] = useState('');
+  const [afectaciones, setAfectaciones] = useState('');
+  const [relacionArbol, setRelacionArbol] = useState('');
+
+  const [imagenes, setImagenes] = useState([]);
+  const navegacion = useNavigation();
+
+  const agregar = () => {
+    if (!ubicacion || !nombreComun || !nombreCientifico || !edad || !altura || !grosorTallo || !densidadFollaje || !afectaciones || !relacionArbol) {
+      Alert.alert("Todos los campos son obligatorios");
+    } else if (size(imagenes) === 0) {
+      Alert.alert("El comentario debe tener al menos 1 imagen");
+    } else {
+      subirImagenesStorage().then((resp) => {
+        db.collection("Reportes")
+          .add({
+            ubicacion: ubicacion,
+            nombreComun: nombreComun,
+            nombreCientifico: nombreCientifico,
+            edad: edad,
+            altura: altura,
+            grosorTallo: grosorTallo,
+            densidadFollaje: densidadFollaje,
+            afectaciones: afectaciones,
+            relacionArbol: relacionArbol,
+            imagenes: resp,
+            creado: new Date(),
+            creadoPor: firebase.auth().currentUser.uid,
+          })
+          .then(() => {
+            Alert.alert("Reporte creado correctamente");
+            navegacion.navigate("Arboledo");
+          })
+          .catch(() => {
+            Alert.alert("Error al crear el reporte");
+            navegacion.navigate("Arboledo");
+          });
+      });
+    }
+  };
+
+  const subirImagenesStorage = async () => {
+    const imagenesBlob = [];
+    await Promise.all(
+      map(imagenes, async (imagen) => {
+        const response = await fetch(imagen);
+        const blob = await response.blob();
+        const ref = firebase.storage().ref("Reportes").child(uuid());
+        await ref.put(blob).then(async (resultado) => {
+          await firebase.storage().ref(`sucursales/${resultado.metadata.name}`)
+
+            .getDownloadURL()
+            .then((urlFoto) => {
+              imagenesBlob.push(urlFoto);
+            });
+        });
+      })
+    );
+    return imagenesBlob;
+  };
+
+  return (
+    <ScrollView style={styles.scroll}>
+      <ImagenPrincipal imagen={imagenes[0]} />
+      <Formulario
+        setUbicacion={setUbicacion}
+        setNombreComun={setNombreComun}
+        setNombreCientifico={setNombreCientifico}
+        setEdad={setEdad}
+        setAltura={setAltura}
+        setGrosorTallo={setGrosorTallo}
+        setDensidadFollaje={setDensidadFollaje}
+        setAfectaciones={setAfectaciones}
+        setRelacionArbol={setRelacionArbol}
+      />
+      <SubirImagen
+        imagenes={imagenes}
+        setImagenes={setImagenes}
+      />
+      <Button
+        title="Registrar Arbol"
+        buttonStyle={styles.btn}
+        onPress={agregar}
+      />
+    </ScrollView>
+  );
+}
+
+function Formulario(propiedades) {
+  const {
+    setUbicacion,
+    setNombreCientifico,
+    setNombreComun,
+    setEdad,
+    setAltura,
+    setGrosorTallo,
+    setDensidadFollaje,
+    setRelacionArbol,
+    setAfectaciones,
+  } = propiedades;
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.heading}>Formulario de Árbol</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Ubicación"
+        value={ubicacion}
+        onChangeText={setUbicacion}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre común"
+        value={nombreComun}
+        onChangeText={setNombreComun}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre científico"
+        value={nombreCientifico}
+        onChangeText={setNombreCientifico}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Estimación de la edad del árbol"
+        value={edad}
+        onChangeText={setEdad}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Altura"
+        value={altura}
+        onChangeText={setAltura}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Grosor del tallo"
+        value={grosorTallo}
+        onChangeText={setGrosorTallo}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Densidad del follaje"
+        value={densidadFollaje}
+        onChangeText={setDensidadFollaje}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Estado de salud aparente"
+        value={afectaciones}
+        onChangeText={setAfectaciones}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Identidad y relación con el árbol"
+        value={relacionArbol}
+        onChangeText={setRelacionArbol}
+      />
+    </ScrollView>
+  );
+}
+
+function SubirImagen(propiedades) {
+  const { imagenes, setImagenes } = propiedades;
+
+  const seleccionar = async () => {
+    const resultado = await Permission.askAsync(
+      Permission.MEDIA_LIBRARY,
+      Permission.CAMERA
+    );
+    if (resultado.status === "denied") {
+      // Modificado: se usa resultado.status en lugar de resultado directamente
+      toastRef.current.show("Debes permitir el acceso a la galeria", 4000);
+    } else {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [4, 3]
+      });
+      console.log(result);
+
+      if (result.cancelled) {
+        toastRef.current.show("Debes seleccionar una imagen", 3000);
+      } else {
+        setImagenes([...imagenes, result.uri]);
+        console.log(imagenes);
+      }
+    }
+  }
+
+  const eliminarImagen = (imagen) => {
+    const copiaArreglo = imagenes;
+    Alert.alert(
+      "Eliminar Imagen",
+      "¿Estás seguro de que deseas eliminar la imagen?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Eliminar",
+          onPress: () => {
+            setImagenes(
+              filter(copiaArreglo, (url) => url !== imagen)
+            );
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  return (
+    <View style={styles.vistaImagenes}>
+      {size(imagenes) < 4 && (
+        <Icon
+          type="material-community"
+          name="camera"
+          color="#7a7a7a"
+          containerStyle={styles.icono}
+          onPress={seleccionar}
+        />
+      )}
+      {map(imagenes, (imagen, index) => (
+        <Avatar
+          key={index}
+          style={styles.avatar}
+          source={{ uri: imagen }}
+          onPress={() => eliminarImagen(imagen)}
+        />
+      ))}
+    </View>
+  );
+}
+
+function ImagenPrincipal(propiedades) {
+  const { imagen } = propiedades;
+  return (
+    <View style={styles.foto}>
+      <Image
+        source={
+          imagen ? { uri: imagen } : require('../../../assets/img/no-encontrada.png')
         }
-    };
-
-
-    //recuperar los datos de cada campo del formulario:
-    const onChange = (e, type) => {
-        setDatos({ ...datos, [type]: e.nativeEvent.text });
-    };
-    return (
-        <View style={styles.formContainer}>
-            <Input
-                placeholder="Correo Electrónico"
-                containerStyle={styles.inputForm}
-                //Evento para activr la funcion e
-                onChange={(e) => onChange(e, "email")}
-                rightIcon={
-                    <Icon
-                        type="material-community-icon"
-                        name="alternate-email"
-                        iconStyle={styles.icono}
-                    />
-                }
-            />
-            <Input
-                placeholder="Contraseña"
-                containerStyle={styles.inputForm}
-                password={true}
-
-                //Si mostrar es false se oculta el texto de lo contrario se muestra
-                secureTextEntry={mostrar ? false : true}
-                onChange={(e) => onChange(e, "password")}
-                rightIcon={
-                    <Icon
-                        type="material-community-icon"
-                        //Si mostrar es false se muestra el icono de ocultar contraseña de lo contrario se muestra el icono de ver contraseña
-                        name={mostrar ? "visibility" : "visibility-off"}
-                        iconStyle={styles.icono}
-                        onPress={() => setMostrar(!mostrar)}
-                    />
-                }
-            />
-            <Input
-                placeholder="Repetir Contraseña"
-                containerStyle={styles.inputForm}
-                password={true}
-
-                //Mostrar repetirContraeña
-                secureTextEntry={mostrarRepetir ? false : true}
-                onChange={(e) => onChange(e, "repeatedPassword")}
-                rightIcon={
-                    <Icon
-                        type="material-community-icon"
-                        name={mostrarRepetir ? "visibility" : "visibility-off"}
-                        iconStyle={styles.icono}
-                        onPress={() => setMostrarRepetir(!mostrarRepetir)}
-                    />
-                }
-            />
-            <Button
-                title="Registrar"
-                containerStyle={styles.btnContainer}
-                buttonStyle={styles.btn}
-                onPress={onSubmit}
-            />
-        </View>
-    )
+        style={{ width: WidthScreen, height: 200 }}
+      />
+    </View>
+  );
 }
-
-function valoresDefault() {
-    return {
-        email: ""
-        ,
-        password: ""
-        ,
-        repeatedPassword: ""
-        ,
-    };
-}
-
-
 
 
 const styles = StyleSheet.create({
-    formContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 30,
-    },
-    inputForm: {
-        width: "100%",
-        marginTop: 20,
-    },
-    btnContainer: {
-        marginTop: 20,
-        width: "100%",
-    },
-    btn: {
-        backgroundColor: "green",
-    },
-    icono: {
-        color: "#c1c1c1"
-    },
-})
-
+  scroll: {
+    height: "100%",
+  },
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 20,
+  },
+  heading: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 10,
+    marginBottom: 12,
+    width: '100%',
+  },
+  vistaImagenes: {
+    flexDirection: "row",
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 30,
+  },
+  icono: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+    height: 70,
+    width: 70,
+    backgroundColor: "#e3e3e3",
+  },
+  avatar: {
+    width: 70,
+    height: 70,
+    marginRight: 10,
+  },
+  btn: {
+    backgroundColor: "#0A6ED3",
+    marginVertical: 20,
+    marginHorizontal: 20,
+  },
+  foto: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+});

@@ -3,6 +3,8 @@ import { View, Text, StyleSheet } from "react-native";
 import { Icon } from "react-native-elements";
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+
 
 import { firebaseApp } from "../../firebase-config";
 import 'firebase/auth';
@@ -121,7 +123,7 @@ const MapScreen = () => {
           color="#0A6ED3"
           containerStyle={styles.btn}
           //Vinculamos el envió a la ruta agregar-suc
-          onPress={() => navegacion.navigate("addArbol")}
+          onPress={() => navegacion.navigate("Agregar Arbol")}
           //
           // onPress={() => navegacion.navigate("addArbol")}
         />

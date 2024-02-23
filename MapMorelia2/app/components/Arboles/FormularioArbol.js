@@ -34,9 +34,11 @@ export default function FormArb() {
     const agregar = () => {
         if (!ubicacion || !nombreComun || !nombreCientifico || !edad || !altura || !grosorTallo || !densidadFollaje || !afectaciones || !relacionArbol) {
             Alert.alert("Todos los campos son obligatorios");
-        } else if (size(imagenes) === 0) {
-            Alert.alert("El comentario debe tener al menos 1 imagen");
-        } else {
+        } 
+        // else if (size(imagenes) === 0) {
+        //     Alert.alert("El comentario debe tener al menos 1 imagen");
+        // } 
+        else {
             subirImagenesStorage().then((resp) => {
                 db.collection("Reportes")
                     .add({
@@ -71,9 +73,9 @@ export default function FormArb() {
             map(imagenes, async (imagen) => {
                 const response = await fetch(imagen);
                 const blob = await response.blob();
-                const ref = firebase.storage().ref("sucursales").child(uuid());
+                const ref = firebase.storage().ref("Reportes").child(uuid());
                 await ref.put(blob).then(async (resultado) => {
-                    await firebase.storage().ref(`sucursales/${resultado.metadata.name}`)
+                    await firebase.storage().ref(`Reportes/${resultado.metadata.name}`)
                         .getDownloadURL()
                         .then((urlFoto) => {
                             imagenesBlob.push(urlFoto);
@@ -84,7 +86,7 @@ export default function FormArb() {
         return imagenesBlob;
     };
 
-    return (
+        return (
         <ScrollView style={styles.scroll}>
             <ImagenPrincipal imagen={imagenes[0]} />
             <Formulario
@@ -126,7 +128,87 @@ function Formulario(propiedades) {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            {/*... (resto del código del componente Formulario) */}
+            <View style={styles.vista}>
+                <Text>Ubicación:</Text>
+                <TextInput
+                    style={styles.textArea}
+                    placeholder="Ingrese la ubicación"
+                    onChangeText={setUbicacion}
+                    value={setUbicacion}
+                />
+            </View>
+            <View style={styles.vista}>
+                <Text>Nombre Común:</Text>
+                <TextInput
+                    style={styles.textArea}
+                    placeholder="Ingrese el nombre común"
+                    onChangeText={setNombreComun}
+                    value={setNombreComun}
+                />
+            </View>
+            <View style={styles.vista}>
+                <Text>Nombre Científico:</Text>
+                <TextInput
+                    style={styles.textArea}
+                    placeholder="Ingrese el nombre científico"
+                    onChangeText={setNombreCientifico}
+                    value={setNombreCientifico}
+                />
+            </View>
+            <View style={styles.vista}>
+                <Text>Edad:</Text>
+                <TextInput
+                    style={styles.textArea}
+                    placeholder="Ingrese la edad"
+                    onChangeText={setEdad}
+                    value={setEdad}
+                />
+            </View>
+            <View style={styles.vista}>
+                <Text>Altura:</Text>
+                <TextInput
+                    style={styles.textArea}
+                    placeholder="Ingrese la altura"
+                    onChangeText={setAltura}
+                    value={setAltura}
+                />
+            </View>
+            <View style={styles.vista}>
+                <Text>Grosor del Tallo:</Text>
+                <TextInput
+                    style={styles.textArea}
+                    placeholder="Ingrese el grosor del tallo"
+                    onChangeText={setGrosorTallo}
+                    value={setGrosorTallo}
+                />
+            </View>
+            <View style={styles.vista}>
+                <Text>Densidad del Follaje:</Text>
+                <TextInput
+                    style={styles.textArea}
+                    placeholder="Ingrese la densidad del follaje"
+                    onChangeText={setDensidadFollaje}
+                    value={setDensidadFollaje}
+                />
+            </View>
+            <View style={styles.vista}>
+                <Text>Afectaciones:</Text>
+                <TextInput
+                    style={styles.textArea}
+                    placeholder="Ingrese las afectaciones"
+                    onChangeText={setAfectaciones}
+                    value={setAfectaciones}
+                />
+            </View>
+            <View style={styles.vista}>
+                <Text>Relación con el Árbol:</Text>
+                <TextInput
+                    style={styles.textArea}
+                    placeholder="Ingrese la relación con el árbol"
+                    onChangeText={setRelacionArbol}
+                    value={setRelacionArbol}
+                />
+            </View>
         </ScrollView>
     ); 
 }
@@ -220,31 +302,29 @@ function ImagenPrincipal(propiedades) {
 
 
 const styles = StyleSheet.create({
-    scroll: {
-        height: "100%",
-    },
-    form: {
-        marginLeft: 10,
-        marginRight: 10,
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: '#fff',
     },
     vista: {
-        marginBottom: 10,
+        marginBottom: 16,
     },
     textArea: {
-        height: 100,
-        width: "100%",
-        padding: 0,
-        margin: 0,
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        marginTop: 8,
     },
     btn: {
         backgroundColor: "#0A6ED3",
-        margin: 20,
+        marginVertical: 20,
     },
     vistaImagenes: {
         flexDirection: "row",
-        marginLeft: 20,
-        marginRight: 20,
-        marginTop: 30,
+        marginVertical: 30,
     },
     icono: {
         alignItems: "center",
@@ -253,10 +333,15 @@ const styles = StyleSheet.create({
         height: 70,
         width: 70,
         backgroundColor: "#e3e3e3",
+        borderRadius: 8,
     },
     avatar: {
         width: 70,
         height: 70,
         marginRight: 10,
+        borderRadius: 8,
+    },
+    foto: {
+        marginBottom: 16,
     },
 });

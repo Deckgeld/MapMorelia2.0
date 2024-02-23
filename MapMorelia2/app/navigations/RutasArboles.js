@@ -9,7 +9,7 @@ const StackScreen = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Arboledo" component={Registros} />
-      <Stack.Screen name="addArbol" component={AddArbol} />
+      <Stack.Screen name="Agregar Arbol" component={AddArbol} />
     </Stack.Navigator>
   );
 };
