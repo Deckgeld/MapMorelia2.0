@@ -3,7 +3,8 @@ import {View,Text} from "react-native";
 export default function Sucursales(){
  return(
  <View>
- <Text>Estadisticas</Text>
+ <Text>Registro</Text>
  </View>
  );
 }
+

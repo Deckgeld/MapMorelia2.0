@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
@@ -8,6 +8,7 @@ const MapScreen = () => {
   const [mapRegion, setMapRegion] = useState(null);
   const [selectedCoordinates, setSelectedCoordinates] = useState(null);
   const [currentDateTime, setCurrentDateTime] = useState('');
+  const [currentMarker, setCurrentMarker] = useState(null);
 
   useEffect(() => {
     const getCurrentDateTime = () => {
@@ -32,6 +33,7 @@ const MapScreen = () => {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         });
+        setCurrentMarker({ latitude, longitude });
       } catch (error) {
         console.error('Error de geolocalización:', error);
       }
@@ -49,6 +51,7 @@ const MapScreen = () => {
   const handleMapPress = (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setSelectedCoordinates({ latitude, longitude });
+    setCurrentMarker({ latitude, longitude });
   };
 
   return (
@@ -67,11 +70,11 @@ const MapScreen = () => {
             title="Mi ubicación"
           />
         )}
-        {selectedCoordinates && (
+        {currentMarker && (
           <Marker
             coordinate={{
-              latitude: selectedCoordinates.latitude,
-              longitude: selectedCoordinates.longitude,
+              latitude: currentMarker.latitude,
+              longitude: currentMarker.longitude,
             }}
             title="Ubicación seleccionada"
           />
@@ -79,9 +82,12 @@ const MapScreen = () => {
       </MapView>
       <View style={styles.bottomContentContainer}>
         <View style={styles.cardContainer}>
-          <View style={styles.coordinatesContainer}>
-            <Text style={styles.coordinatesText}>
-              Latitud: {selectedCoordinates ? selectedCoordinates.latitude.toFixed(6) : (location ? location.latitude.toFixed(6) : '---')}, Longitud: {selectedCoordinates ? selectedCoordinates.longitude.toFixed(6) : (location ? location.longitude.toFixed(6) : '---')}
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoText}>
+              Latitud: {selectedCoordinates ? selectedCoordinates.latitude.toFixed(6) : (location ? location.latitude.toFixed(6) : '---')}
+            </Text>
+            <Text style={styles.infoText}>
+              Longitud: {selectedCoordinates ? selectedCoordinates.longitude.toFixed(6) : (location ? location.longitude.toFixed(6) : '---')}
             </Text>
           </View>
           <View style={styles.dateTimeContainer}>
@@ -95,10 +101,10 @@ const MapScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.7,
+    flex: 1,
   },
   map: {
-    flex: 0.7,
+    flex: 1,
   },
   bottomContentContainer: {
     position: 'absolute',
@@ -108,22 +114,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: 'white',
     borderRadius: 10,
-    padding: 10,
+    padding: 20,
+    minWidth: 200,
+    maxWidth: '80%',
   },
-  coordinatesContainer: {
+  infoContainer: {
     marginBottom: 10,
   },
-  coordinatesText: {
+  infoText: {
     fontSize: 16,
+    marginBottom: 5,
+    fontFamily: 'Arial',
+    fontWeight: 'bold',
   },
   dateTimeContainer: {
-    marginBottom: 10,
+    alignItems: 'flex-end',
   },
   dateTimeText: {
     fontSize: 16,
+    fontFamily: 'Arial',
   },
 });
 
 export default MapScreen;
+
