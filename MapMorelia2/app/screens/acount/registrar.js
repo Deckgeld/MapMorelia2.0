@@ -24,11 +24,9 @@ export default function Registrar() {
     );
 }
 
-
 const styles = StyleSheet.create({
     imagen: {
-        width: "100%"
-        ,
+        width: "100%",
         height: 150,
         marginTop: 20,
     },
@@ -37,4 +35,4 @@ const styles = StyleSheet.create({
         marginLeft: 40,
         marginRight: 40,
     },
-})
+});

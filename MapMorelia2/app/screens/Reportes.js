@@ -12,21 +12,21 @@ export default function ListaReportes() {
   const reportes = [
     {
       id: "1",
-      titulo: "Reporte 1",
-      colonia: "Colonia A",
-      imagenUrl: "https://www.adslzone.net/app/uploads-adslzone.net/2019/04/borrar-fondo-imagen-800x419.jpg", // Reemplaza esto con tu URL de imagen
+      titulo: "Reporte Arboles",
+      colonia: "Salida a Charo",
+      imagenUrl: "https://images.adsttc.com/media/images/5fa0/ab4c/63c0/1773/7400/0340/medium_jpg/IMG_20201028_182509376.jpg?1604365122", // Reemplaza esto con tu URL de imagen
     },
     {
       id: "2",
-      titulo: "Reporte 2",
-      colonia: "Colonia B",
-      imagenUrl: "https://www.adslzone.net/app/uploads-adslzone.net/2019/04/borrar-fondo-imagen-800x419.jpg", // Reemplaza esto con tu URL de imagen
+      titulo: "Reporte Arboles",
+      colonia: "Centro",
+      imagenUrl: "https://images.adsttc.com/media/images/5fa0/ab4c/63c0/1773/7400/0340/medium_jpg/IMG_20201028_182509376.jpg?1604365122", // Reemplaza esto con tu URL de imagen
     },
     {
       id: "3",
-      titulo: "Reporte 3",
-      colonia: "Colonia C",
-      imagenUrl: "https://www.adslzone.net/app/uploads-adslzone.net/2019/04/borrar-fondo-imagen-800x419.jpg", // Reemplaza esto con tu URL de imagen
+      titulo: "Reporte Arboles",
+      colonia: "Salida Quiroga",
+      imagenUrl: "https://images.adsttc.com/media/images/5fa0/ab4c/63c0/1773/7400/0340/medium_jpg/IMG_20201028_182509376.jpg?1604365122", // Reemplaza esto con tu URL de imagen
     },
   ];
 
