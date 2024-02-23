@@ -122,6 +122,8 @@ const MapScreen = () => {
           containerStyle={styles.btn}
           //Vinculamos el envió a la ruta agregar-suc
           onPress={() => navegacion.navigate("addArbol")}
+          //
+          // onPress={() => navegacion.navigate("addArbol")}
         />
       )}
 

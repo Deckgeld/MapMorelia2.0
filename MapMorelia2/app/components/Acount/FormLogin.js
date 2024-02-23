@@ -20,20 +20,22 @@ export default function FormRegistro(toast) {
         if (isEmpty(datos.email) || isEmpty(datos.password)) {
             //console.log("No puedes dejar campos vacios");
             toastRef.current.show("No puedes dejar campos vacios");
+            Alert.alert("Error", "No puedes dejar campos vacios");
         }//Validados la estructura del email
         else if (!validarEmail(datos.email)) {
             //console.log("Estructura del email incorrecta");
             toastRef.current.show("Estructura del email incorrecta");
+            Alert.alert("Error", "Estructura del email incorrecta");
         }
         else {
             firebase.auth().signInWithEmailAndPassword( datos.email, datos.password)
                     .then(respuesta => {
-                        Alert.alert("Bienvenido", "Has iniciado sesión correctamente", [{ text: "OK" }]);
+                        Alert.alert("Bienvenido", "Has iniciado sesión correctamente");
                         navigation.navigate("cuentas");
                     })
                     .catch(err => {
                         //toastRef.current.show("Email o contraseña incorrecta")
-                        Alert.alert("Error", "Email o contraseña incorrecta", [{ text: "OK" }]);
+                        Alert.alert("Error", "Email o contraseña incorrecta");
                     });
             }
     };
