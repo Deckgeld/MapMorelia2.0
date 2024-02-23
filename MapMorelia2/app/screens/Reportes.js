@@ -4,98 +4,77 @@ import {
   Text,
   View,
   FlatList,
-  ActivityIndicator,
   TouchableOpacity,
+  Image,
 } from "react-native";
-import { Image } from "react-native-elements";
-import { size } from "lodash";
-import { useNavigation } from "@react-navigation/native";
 
-export default function ListaSucursales(propiedades) {
-  //const {sucursales}=propiedades;
-  const { sucursales } = propiedades;
-  return (
-    <View>
-      {size(sucursales) > 0 ? (
-        <FlatList
-          data={sucursales}
-          renderItem={(sucursales) => <Sucursales sucursales={sucursales} />}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      ) : (
-        <View style={styles.sucursales}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          <Text>Cargando Sucursales</Text>
-        </View>
-      )}
-    </View>
-  );
-}
+export default function ListaReportes() {
+  const reportes = [
+    {
+      id: "1",
+      titulo: "Reporte 1",
+      colonia: "Colonia A",
+      imagenUrl: "https://www.adslzone.net/app/uploads-adslzone.net/2019/04/borrar-fondo-imagen-800x419.jpg", // Reemplaza esto con tu URL de imagen
+    },
+    {
+      id: "2",
+      titulo: "Reporte 2",
+      colonia: "Colonia B",
+      imagenUrl: "https://www.adslzone.net/app/uploads-adslzone.net/2019/04/borrar-fondo-imagen-800x419.jpg", // Reemplaza esto con tu URL de imagen
+    },
+    {
+      id: "3",
+      titulo: "Reporte 3",
+      colonia: "Colonia C",
+      imagenUrl: "https://www.adslzone.net/app/uploads-adslzone.net/2019/04/borrar-fondo-imagen-800x419.jpg", // Reemplaza esto con tu URL de imagen
+    },
+  ];
 
-function Sucursales(propiedades) {
-  //Recibe la lista de sucursales
-  const { sucursales } = propiedades;
-  //en cada iteración obtiene los datos de la sucursal
-  const { imagenes, nombre, direccion, descripcion, id } = sucursales.item;
-  //definimos el acceso a las rutas de sucursales
-  const navegacion = useNavigation();
-  //Método que se ejecutará al dar clic a los items de la lista
-  const consultarRestaurante = () => {
-    navegacion.navigate("ver_sucursal", { id, nombre });
-  };
-  return (
-    //Agregamos el clic a cada item al dar clic el item se opaca
-    <TouchableOpacity onPress={consultarRestaurante}>
-      {/*Esturctura de cada item */}
-      <View style={styles.lista}>
-        <View style={styles.viewImagen}>
-          {/*cover escala la imagen de forma uniforme para evitar distorsión
- PlaceholderContent mostrará un spiner si tarda la carga de imagen
- source define que se mostrará la imagen 0 del arreglo de imágenes guardadas, si sucediera que
- no hay imagen se muestra la imagen no-encontrada cargada en el proyecto*/}
-
-        </View>
-        {/*Mostramos los datos adicionales de la sucursal, en el caso de la descripción dado que puede ser
- larga limitamos el texto a mostrar*/}
-        <View>
-          <Text style={styles.nombre}>{nombre}</Text>
-          <Text style={styles.direccion}>{direccion}</Text>
-          <Text style={styles.descripcion}>
-            {descripcion.substring(0, 60)}...
-          </Text>
-        </View>
+  const renderItem = ({ item }) => (
+    <TouchableOpacity style={styles.itemContainer}>
+      <Image
+        source={{ uri: item.imagenUrl }}
+        style={styles.imagen}
+        resizeMode="cover"
+      />
+      <View style={styles.textContainer}>
+        <Text style={styles.titulo}>{item.titulo}</Text>
+        <Text style={styles.colonia}>{item.colonia}</Text>
       </View>
     </TouchableOpacity>
+  );
+
+  return (
+    <FlatList
+      data={reportes}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  sucursales: {
-    marginTop: 10,
-    marginBottom: 10,
-    alignItems: "center",
-  },
-  lista: {
+  itemContainer: {
     flexDirection: "row",
-    margin: 10,
-  },
-  viewImagen: {
-    marginRight: 15,
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    padding: 10,
   },
   imagen: {
     width: 80,
     height: 80,
+    marginRight: 10,
+    borderRadius: 5,
   },
-  nombre: {
+  textContainer: {
+    flex: 1,
+  },
+  titulo: {
     fontWeight: "bold",
+    fontSize: 18,
   },
-  direccion: {
-    paddingTop: 2,
+  colonia: {
     color: "grey",
-  },
-  descripcion: {
-    paddingTop: 2,
-    color: "grey",
-    width: 300,
   },
 });
